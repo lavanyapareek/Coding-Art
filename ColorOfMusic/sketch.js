@@ -25,7 +25,6 @@ function record() {
   recorder.onstop = exportVideo;
   
 }
-
 function exportVideo(e) {
   var blob = new Blob(chunks, { 'type' : 'video/webm' });
 
@@ -47,10 +46,6 @@ function exportVideo(e) {
   window.URL.revokeObjectURL(url);
 
 }
-
-
-
-
 function keyPressed() {
     
   // toggle recording true or false

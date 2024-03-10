@@ -1,33 +1,79 @@
 
 let antColor = new Uint8Array([100, 125, 200]);
 const antsNum = 4096;
-let sensorOffset = 25;
-const clockwise = 45;
+let sensorOffset = 7.5;
+const clockwise = 30;
 const counter = -30;
+
+var sound;
+
+function preload() {
+  sound = loadSound('audiofile3.mp3');
+}
 
 setup = () => {
   createCanvas(windowWidth, windowHeight);
   angleMode(DEGREES);
   pixelDensity(1);
   background(0); // Initialize trail
+
+  userStartAudio();
+  sound.loop();
+  fft = new p5.FFT();
+  amplitude = new p5.Amplitude();
+
   ants.init();
 };
 
+
+
 draw = () => {
-  for(let k = 0; k < 100; k++){
+
   background(0, 50); // Update trail
+
+  var spectrum = fft.analyze();
+  colorMode(HSB, 512, 1024, 1024, 100);
+  p.push(new Particle(color(colourChoose(), 1024, 1024)));
+  
+  var level = amplitude.getLevel();
+
+  var size = map(level, 0, 1, 0, 200);
+  
+  var freqId = i % 1024;                                                                          
+
 
   stroke(255);
   strokeWeight(1);
   mouseIsPressed && line(pmouseX, pmouseY, mouseX, mouseY);
   loadPixels();
-  for (let i = 20; i--;) {
+  for (let i = 15; i--;) {
+
+    var freqId = i % 1024;                                                                          
+
+    var spec = map(spectrum[freqId], 0, 255, 0, 0.01);
+
     ants.updateAngle();
-    ants.updatePosition();
+    ants.updatePosition(spec);
+    ants.updateColor();
   }
   updatePixels();
-}
+
 };
+
+var sound, amplitude;
+
+function colourChoose() {
+  var spectrum = fft.analyze();
+  var specHue = 0;
+
+  for (var i = 0; i < spectrum.length; i++) {
+
+    var m = map(spectrum[i], 0, 255, 0, 1);
+    specHue += m;
+  }
+  return specHue;
+}
+
 
 const ant = () => ({
   x: width / 2,
@@ -68,15 +114,22 @@ const ants = {
     }
   },
 
-  updatePosition() {
+  updatePosition(spec) {
+    const speed = map(spec, 1, 5, 1, 0.1)
     for (const a of this.ants) {
-      a.x += cos(a.angle) * a.step;
-      a.y += sin(a.angle) * a.step;
+      a.x += cos(a.angle) * speed;
+      a.y += sin(a.angle) * speed;
       a.x = (a.x + width) % width;
       a.y = (a.y + height) % height;
 
-      const index = ((0 | a.x) + (0 | a.y) * width) * 4;
-      pixels.set(antColor, index);
+
+
     }
   },
+  updateColor() {
+    for (const a of this.ants) {
+      const index = ((0 | a.x) + (0 | a.y) * width) * 4;
+      pixels.set(colourChoose(), index);
+    }
+  }
 };
