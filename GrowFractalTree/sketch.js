@@ -1,25 +1,20 @@
 var tree = [];
-var count = 1;
 var leaves = [];
-var redA = 1.75;
-var redB = 1.75;
-var angleA;
-var angleB;
+var redA = 1.80;
+var redB = 1.20;
+let angleA;
+let angleB;
 let slider;
-let angle;
-function update(){
-  for(var i = 0; i < slider.value() - 1; i++){
-
-  }
-}
+let iter = 0;
 function setup() {
-  createCanvas(windowWidth, windowHeight -30);
-  var a = createVector(width/2, height - 200);
-  var b = createVector(width/2, height - 500)
-  var root = new Branch(a, b);
-  tree[0] = root;
-  slider = createSlider(1, 1000, 0, 0.001);
-  angle = createSlider(0, PI/2, 0, 0.001);
+  createCanvas(windowWidth, windowHeight);
+  var a = createVector(width / 2, height);
+  var b = createVector(width / 2, height - 250);
+  var root = new Branch(a, b, 0, 100);  // Start with stroke weight of 100
+  tree.push(root);
+  slider = createSlider(1, 100000, 1, 1); // Controls the depth of the tree
+  angleA = createSlider(0, PI / 2, PI / 4, 0.01);
+  angleB = angleA.value()  // Controls the angle of branches
 }
 
 function windowResized() {
@@ -28,15 +23,25 @@ function windowResized() {
 
 function draw() {
   background(0);
-  update();
-  for(var i = 0; i < tree.length; i++){
-    if(!tree[i].finished){
-      tree.push(tree[i].branch(redA, angle.value(), str));
-      tree.push(tree[i].branch(redB, -angle.value(), str));
-      
+  for (var i = 0; i < tree.length; i++) {
+    tree[i].show();
+  }
+
+  // Only grow the tree when there are unfinished branches
+  if (slider.value() > tree.length / 2) {
+    for (var i = tree.length - 1; i >= 0; i--) {
+      if (!tree[i].finished) {
+        iter += 1
+        if(i%13 == 0){
+          tree.push(tree[i].branch(iter, redA, angleA.value()));
+          tree.push(tree[i].branch(iter, redB, -angleB));
+        }else{
+          tree.push(tree[i].branch(iter, redB, angleB));
+          tree.push(tree[i].branch(iter, redA, -angleA.value()));
+        }
+
+        tree[i].finished = true;
+      }
     }
-    count++;
-    tree[i].finished = true;
-    tree[i].show(count);
   }
 }

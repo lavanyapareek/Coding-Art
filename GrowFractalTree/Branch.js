@@ -1,25 +1,22 @@
-function Branch(begin, end, angle){
+function Branch(begin, end, angle, weight) {
     this.begin = begin;
     this.end = end;
     this.angle = angle;
+    this.weight = weight;
     this.finished = false;
     
-    this.show = function(){
+    this.show = function() {
         stroke(255);
-        strokeWeight(0.75)
-        line(this.begin.x, this.begin.y, this.end.x, this.end.y)
-    }
-    this.jitter = function(){
-        this.end.x += random(-0.1,0.1);
-        this.end.y += random(-0.1,0.1);
+        strokeWeight(this.weight);
+        line(this.begin.x, this.begin.y, this.end.x, this.end.y);
     }
 
-    this.branch = function(red, angle, str){
+    this.branch = function(iter, red, angle) {
         var dir = p5.Vector.sub(this.end, this.begin);
         dir.rotate(angle);
-        dir.mult(1/red);
+        dir.mult(1 / red);
         var newEnd = p5.Vector.add(this.end, dir);
-        var right = new Branch(this.end, newEnd)
-        return right;
+        var newWeight = (this.weight - Math.sqrt(iter))* 0.4;  // Decrease stroke weight for each branch
+        return new Branch(this.end, newEnd, angle, newWeight);
     }
 }

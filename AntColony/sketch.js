@@ -1,79 +1,34 @@
-
 let antColor = new Uint8Array([100, 125, 200]);
-const antsNum = 4096;
-let sensorOffset = 7.5;
-const clockwise = 30;
-const counter = -30;
+const antsNum = 8192;
+let sensorOffset = 10;
+const clockwise = 90;
+const counter = -90;
 
-var sound;
-
-function preload() {
-  sound = loadSound('audiofile3.mp3');
-}
-
-setup = () => {
+function setup() {
   createCanvas(windowWidth, windowHeight);
   angleMode(DEGREES);
   pixelDensity(1);
   background(0); // Initialize trail
 
-  userStartAudio();
-  sound.loop();
-  fft = new p5.FFT();
-  amplitude = new p5.Amplitude();
-
   ants.init();
-};
+}
 
-
-
-draw = () => {
-
+function draw() {
   background(0, 50); // Update trail
-
-  var spectrum = fft.analyze();
-  colorMode(HSB, 512, 1024, 1024, 100);
-  p.push(new Particle(color(colourChoose(), 1024, 1024)));
-  
-  var level = amplitude.getLevel();
-
-  var size = map(level, 0, 1, 0, 200);
-  
-  var freqId = i % 1024;                                                                          
-
 
   stroke(255);
   strokeWeight(1);
-  mouseIsPressed && line(pmouseX, pmouseY, mouseX, mouseY);
+  if (mouseIsPressed) {
+    line(pmouseX, pmouseY, mouseX, mouseY);
+  }
   loadPixels();
   for (let i = 15; i--;) {
-
-    var freqId = i % 1024;                                                                          
-
-    var spec = map(spectrum[freqId], 0, 255, 0, 0.01);
-
     ants.updateAngle();
-    ants.updatePosition(spec);
+    ants.updatePosition();
     ants.updateColor();
   }
   updatePixels();
-
-};
-
-var sound, amplitude;
-
-function colourChoose() {
-  var spectrum = fft.analyze();
-  var specHue = 0;
-
-  for (var i = 0; i < spectrum.length; i++) {
-
-    var m = map(spectrum[i], 0, 255, 0, 1);
-    specHue += m;
-  }
-  return specHue;
 }
-
 
 const ant = () => ({
   x: width / 2,
@@ -91,8 +46,8 @@ const ants = {
 
   smell(a, d) {
     const aim = a.angle + d;
-    let x = 0 | (a.x + sensorOffset * cos(aim));
-    let y = 0 | (a.y + sensorOffset * sin(aim));
+    let x = Math.floor(a.x + sensorOffset * cos(aim));
+    let y = Math.floor(a.y + sensorOffset * sin(aim));
 
     x = (x + width) % width;
     y = (y + height) % height;
@@ -108,28 +63,31 @@ const ants = {
         left = this.smell(a, counter);
 
       if (center > left && center > right) {
-        /* Carry on straight */
-      } else if (left < right) a.angle += clockwise;
-      else if (left > right) a.angle += counter;
+        // Carry on straight
+      } else if (left < right) {
+        a.angle += clockwise;
+      } else if (left > right) {
+        a.angle += counter;
+      }
     }
   },
 
-  updatePosition(spec) {
-    const speed = map(spec, 1, 5, 1, 0.1)
+  updatePosition() {
+    const speed = random(1, 5); // Random speed
     for (const a of this.ants) {
       a.x += cos(a.angle) * speed;
       a.y += sin(a.angle) * speed;
       a.x = (a.x + width) % width;
       a.y = (a.y + height) % height;
-
-
-
     }
   },
+
   updateColor() {
     for (const a of this.ants) {
-      const index = ((0 | a.x) + (0 | a.y) * width) * 4;
-      pixels.set(colourChoose(), index);
+      const index = (Math.floor(a.x) + Math.floor(a.y) * width) * 4;
+      pixels[index] = antColor[0];
+      pixels[index + 1] = antColor[1];
+      pixels[index + 2] = antColor[2];
     }
   }
 };

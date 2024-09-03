@@ -8,7 +8,7 @@ let totalSteps;
 let speed;
 class Spiral {
   constructor(x, y, w, h) {
-    this.stepSize = 2;
+    this.stepSize = 1;
     this.pos = createVector(x, y);
     const cols = w / this.stepSize;
     const rows = h / this.stepSize;
@@ -29,13 +29,13 @@ class Spiral {
     noStroke();
     if (testFunction(this.step)) {
       fill(255);
-      circle(this.x, this.y, this.stepSize * 0.2);
+      circle(this.x, this.y, this.stepSize);
     } else {
-      fill(10);
-      circle(this.x, this.y, this.stepSize * 0.2);
+      fill(0);
+      circle(this.x, this.y, this.stepSize);
     }
-    strokeWeight(1);
-    stroke(255, 50);
+    strokeWeight(20);
+    stroke(255);
     pop();
     this.px = this.x;
     this.py = this.y;
@@ -96,7 +96,7 @@ function setup() {
 }
 
 function draw() {
-  spiral1.update(isPrime)
+  //spiral1.update(isPrime)
   for (let i = 0; i < speed.value(); i++) {
     spiral1.update(isPrime);
   }

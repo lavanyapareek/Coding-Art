@@ -79,7 +79,7 @@ const bluemask  = 0x0000ff00;
 var sound, amplitude;
 
 function preload(){
-  sound = loadSound('audi.mp3');                                                    
+  sound = loadSound('audio.mp3');                                                    
 }
 
 function setup(){
@@ -104,14 +104,35 @@ function setup(){
   amplitude = new p5.Amplitude();
 
 }
-
+var lastlevel = 0;
+var threshold = 0.5;
+var bgColor = [0,0,0]
 function draw(){
- let last = get(0,0,width, height);
- if (random(0,350)<1){
-  background(0,0,0);
- }
+  var level = amplitude.getLevel();
 
+ let last = get(0,0,width, height);
  var spectrum = fft.analyze();
+ let colorIndex = int(spectrum.length);
+
+//  let mainColor = map(random(spectrum[colorIndex]), 0, 255, 0, 255);
+ 
+if (level > threshold && lastLevel <= threshold) {
+  bgColor = (colourChoose()+ 90) % 360
+  //bgColor = [255 - mainColor, 255 - (mainColor), 255 - (mainColor)];  
+}else{
+  bgColor = colourChoose()
+  //bgColor = [mainColor, (mainColor), (mainColor)]
+}
+
+lastLevel = level;  // Update lastLevel to the current level
+colorMode(HSB, 360, 50, 100);
+background(bgColor, 50, 100); 
+
+//  if (random(0,250)<1){
+//   background(0,0,0);
+//  }
+
+ 
  colorMode(HSB, 512, 1024, 1024, 100);
 
  //fill(0,0,0, 7);
@@ -179,8 +200,8 @@ function draw(){
  pop();
  
  //makeBlack();
- var level = amplitude.getLevel();
- t += map(level, 0.1, 1.1, 1, 10);
+
+ t += map(level, 0.1, 1.1, 1, 11);
  
 }
 
