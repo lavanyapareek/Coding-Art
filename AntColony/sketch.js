@@ -22,7 +22,7 @@ function draw() {
     line(pmouseX, pmouseY, mouseX, mouseY);
   }
   loadPixels();
-  for (let i = 15; i--;) {
+  for (let i = 1; i--;) {
     ants.updateAngle();
     ants.updatePosition();
     ants.updateColor();
