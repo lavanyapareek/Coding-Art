@@ -1,7 +1,7 @@
 let x, y;
 let px, py;
 let step = 1;
-let numSteps = 1;
+let numSteps = 0.25;
 let state = 0;
 let turnCounter = 1;
 let totalSteps;

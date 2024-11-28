@@ -79,7 +79,7 @@ const bluemask  = 0x0000ff00;
 var sound, amplitude;
 
 function preload(){
-  sound = loadSound('audio.mp3');                                                    
+  sound = loadSound('audi.mp3');                                                    
 }
 
 function setup(){
