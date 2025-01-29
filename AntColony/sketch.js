@@ -126,7 +126,7 @@ const ants = {
   },
 
   updatePosition(f) {
-    const speed = f*map(level, 0.1, 1.1, 1, 11)/20;;  
+    const speed = f*map(level, 0.1, 1.1, 1, 11)/10;;  
     for (const a of this.ants) {
       a.x += cos(a.angle) * speed;
       a.y += sin(a.angle) * speed;
